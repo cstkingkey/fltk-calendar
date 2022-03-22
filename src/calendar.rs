@@ -11,7 +11,7 @@ use fltk::{
 };
 use std::{cell::RefCell, rc::Rc};
 
-const DAYS: &[&str] = &["一", "二", "三", "四", "五", "六", "日"];
+const DAYS: &[&str] = &["日", "一", "二", "三", "四", "五", "六"];
 
 /// Defines a calendar dialog
 pub struct Calendar {
@@ -32,8 +32,8 @@ impl Calendar {
         let curr = (local.month() - 1) as i32;
         let curr_year = local.year();
         // create window with month and year choice widgets
-        let mut wind = window::Window::new(x, y, 400, 300, "Calendar");
-        
+        let mut wind = window::Window::new(x, y, 400, 360, "Calendar");
+
         let mut year_choice = menu::Choice::new(100, 5, 80, 40, "");
         for i in 1900..curr_year + 1 {
             year_choice.add_choice(&format!("{}", i));
@@ -45,13 +45,13 @@ impl Calendar {
         month_choice.set_value(curr);
 
         // Create a table with the days of the selected month
-        let mut table = table::TableRow::new(5, 50, 390, 250, "");
+        let mut table = table::TableRow::new(5, 50, 390, 300, "");
         table.set_type(table::TableRowSelectMode::Single);
-        table.set_rows(5);
+        table.set_rows(6);
         table.set_cols(7);
         table.set_col_header(true);
         table.set_col_width_all(table.width() / 7);
-        table.set_row_height_all(table.height() / 4 - table.col_header_height());
+        table.set_row_height_all((table.height() - 5 - table.col_header_height())/6);
         table.end();
         wind.make_modal(true);
         wind.end();
@@ -66,18 +66,15 @@ impl Calendar {
             move |t, ctx, row, col, x, y, w, h| {
                 let curr_year = curr_year.borrow();
                 let curr = curr.borrow();
-                let first =
-                NaiveDate::from_ymd(*curr_year, *curr as u32, 1).weekday() as i32;
-                let day_idx = col + first;
-                let day_idx = if day_idx > 6 { day_idx - 7 } else { day_idx };
+                let first = NaiveDate::from_ymd(*curr_year, *curr as u32, 1).weekday().num_days_from_sunday() as i32;
                 match ctx {
                     table::TableContext::StartPage => draw::set_font(Font::Helvetica, 14),
                     table::TableContext::ColHeader => {
-                        let day = DAYS[day_idx as usize];
+                        let day = DAYS[col as usize];
                         draw_header(day, x, y, w, h)
                     }
                     table::TableContext::Cell => {
-                        let day = row * 7 + col + 1;
+                        let day = row * 7 + col + 1 - first;
                         let max_days = match *curr {
                             1 => 31,
                             2 => {
@@ -99,7 +96,7 @@ impl Calendar {
                             12 => 31,
                             _ => unreachable!(),
                         };
-                        if day < (max_days + 1) {
+                        if 0 < day && day < (max_days + 1) {
                             draw_data(day, x, y, w, h, t.is_selected(row, col));
                         }
                     }
@@ -153,10 +150,14 @@ impl Calendar {
         if r == -1 || c == -1 {
             None
         } else {
-            let day = r * 7 + c + 1;
+            let year = self.year_choice.value() + 1900;
+            let month = self.month_choice.value() as u32 + 1;
+            let first = NaiveDate::from_ymd(year, month, 1).weekday().num_days_from_sunday() as i32;
+
+            let day = r * 7 + c + 1 - first;
             NaiveDate::from_ymd_opt(
-                self.year_choice.value() + 1900,
-                self.month_choice.value() as u32 + 1,
+                year,
+                month,
                 day as u32,
             )
         }
