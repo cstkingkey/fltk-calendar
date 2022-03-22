@@ -11,7 +11,7 @@ use fltk::{
 };
 use std::{cell::RefCell, rc::Rc};
 
-const DAYS: &[&str] = &["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAYS: &[&str] = &["一", "二", "三", "四", "五", "六", "日"];
 
 /// Defines a calendar dialog
 pub struct Calendar {
@@ -33,14 +33,17 @@ impl Calendar {
         let curr_year = local.year();
         // create window with month and year choice widgets
         let mut wind = window::Window::new(x, y, 400, 300, "Calendar");
-        let mut month_choice = menu::Choice::new(100, 5, 80, 40, "");
-        month_choice.add_choice("Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec");
-        month_choice.set_value(curr);
-        let mut year_choice = menu::Choice::new(220, 5, 80, 40, "");
+        
+        let mut year_choice = menu::Choice::new(100, 5, 80, 40, "");
         for i in 1900..curr_year + 1 {
             year_choice.add_choice(&format!("{}", i));
         }
         year_choice.set_value(curr_year - 1900);
+
+        let mut month_choice = menu::Choice::new(220, 5, 80, 40, "");
+        month_choice.add_choice("一|二|三|四|五|六|七|八|九|十|十一|十二");
+        month_choice.set_value(curr);
+
         // Create a table with the days of the selected month
         let mut table = table::TableRow::new(5, 50, 390, 250, "");
         table.set_type(table::TableRowSelectMode::Single);
