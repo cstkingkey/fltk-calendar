@@ -35,7 +35,7 @@ impl Calendar {
         let mut wind = window::Window::new(x, y, 400, 360, "Calendar");
 
         let mut year_choice = menu::Choice::new(100, 5, 80, 40, "");
-        for i in 1900..curr_year + 1 {
+        for i in 1900..curr_year + 100 {
             year_choice.add_choice(&format!("{}", i));
         }
         year_choice.set_value(curr_year - 1900);
