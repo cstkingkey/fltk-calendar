@@ -67,6 +67,7 @@ impl Calendar {
                 let curr_year = curr_year.borrow();
                 let curr = curr.borrow();
                 let first = NaiveDate::from_ymd(*curr_year, *curr as u32, 1).weekday().num_days_from_sunday() as i32;
+                
                 match ctx {
                     table::TableContext::StartPage => draw::set_font(Font::Helvetica, 14),
                     table::TableContext::ColHeader => {
@@ -97,7 +98,9 @@ impl Calendar {
                             _ => unreachable!(),
                         };
                         if 0 < day && day < (max_days + 1) {
-                            draw_data(day, x, y, w, h, t.is_selected(row, col));
+                            let current_date = NaiveDate::from_ymd(*curr_year, *curr as u32, day as u32);
+                            let selected = t.is_selected(row, col) || current_date == Local::today().naive_local();
+                            draw_data(day, x, y, w, h, selected);
                         }
                     }
                     _ => (),
