@@ -1,6 +1,6 @@
+use chrono::prelude::*;
 use fltk::{prelude::*, *};
 use fltk_calendar::calendar;
-use chrono::prelude::*;
 
 fn main() {
     let app = app::App::default().with_scheme(app::Scheme::Gtk);

@@ -51,7 +51,7 @@ impl Calendar {
         table.set_cols(7);
         table.set_col_header(true);
         table.set_col_width_all(table.width() / 7);
-        table.set_row_height_all((table.height() - 5 - table.col_header_height())/6);
+        table.set_row_height_all((table.height() - 5 - table.col_header_height()) / 6);
         table.end();
         wind.make_modal(true);
         wind.end();
@@ -66,8 +66,10 @@ impl Calendar {
             move |t, ctx, row, col, x, y, w, h| {
                 let curr_year = curr_year.borrow();
                 let curr = curr.borrow();
-                let first = NaiveDate::from_ymd(*curr_year, *curr as u32, 1).weekday().num_days_from_sunday() as i32;
-                
+                let first = NaiveDate::from_ymd(*curr_year, *curr as u32, 1)
+                    .weekday()
+                    .num_days_from_sunday() as i32;
+
                 match ctx {
                     table::TableContext::StartPage => draw::set_font(Font::Helvetica, 14),
                     table::TableContext::ColHeader => {
@@ -98,8 +100,10 @@ impl Calendar {
                             _ => unreachable!(),
                         };
                         if 0 < day && day < (max_days + 1) {
-                            let current_date = NaiveDate::from_ymd(*curr_year, *curr as u32, day as u32);
-                            let selected = t.is_selected(row, col) || current_date == Local::today().naive_local();
+                            let current_date =
+                                NaiveDate::from_ymd(*curr_year, *curr as u32, day as u32);
+                            let selected = t.is_selected(row, col)
+                                || current_date == Local::today().naive_local();
                             draw_data(day, x, y, w, h, selected);
                         }
                     }
@@ -125,7 +129,6 @@ impl Calendar {
             if app::event_clicks() {
                 t.top_window().unwrap().hide();
             }
-            
         });
 
         // Keep the window shown awaiting input
@@ -155,14 +158,12 @@ impl Calendar {
         } else {
             let year = self.year_choice.value() + 1900;
             let month = self.month_choice.value() as u32 + 1;
-            let first = NaiveDate::from_ymd(year, month, 1).weekday().num_days_from_sunday() as i32;
+            let first = NaiveDate::from_ymd(year, month, 1)
+                .weekday()
+                .num_days_from_sunday() as i32;
 
             let day = r * 7 + c + 1 - first;
-            NaiveDate::from_ymd_opt(
-                year,
-                month,
-                day as u32,
-            )
+            NaiveDate::from_ymd_opt(year, month, day as u32)
         }
     }
 }
