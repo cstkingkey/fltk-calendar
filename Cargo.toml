@@ -1,11 +1,10 @@
 [package]
-name = "fltk-calendar"
+name = "fltk-calendar-cn"
 version = "0.4.0"
-authors = ["MoAlyousef <mohammed.alyousef@neurosrg.com>"]
+authors = ["cstkingkey <cstkingkey@gmail.com>"]
 edition = "2021"
-description = "A calendar dialog for fltk-rs"
-repository = "https://github.com/fltk-rs/fltk-calendar"
-documentation = "https://docs.rs/fltk-calendar"
+description = "A calendar dialog for fltk-rs and Chinese users."
+repository = "https://github.com/cstkingkey/fltk-calendar"
 keywords = ["gui", "ui", "widgets", "bindings", "graphics"]
 categories = ["gui"]
 readme = "README.md"
