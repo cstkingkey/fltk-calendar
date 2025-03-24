@@ -5,7 +5,7 @@ use chrono::NaiveDate;
 use fltk::{
     app, draw,
     enums::{Align, Color, Font, FrameType},
-    menu,
+    group, menu,
     prelude::*,
     table, window,
 };
@@ -31,6 +31,7 @@ impl Calendar {
         let local: DateTime<Local> = Local::now();
         let curr = (local.month() - 1) as i32;
         let curr_year = local.year();
+        group::Group::set_current(None::<&group::Group>);
         // create window with month and year choice widgets
         let mut wind = window::Window::new(x, y, 400, 360, "Calendar");
 
@@ -66,7 +67,8 @@ impl Calendar {
             move |t, ctx, row, col, x, y, w, h| {
                 let curr_year = curr_year.borrow();
                 let curr = curr.borrow();
-                let first = NaiveDate::from_ymd(*curr_year, *curr as u32, 1)
+                let first = NaiveDate::from_ymd_opt(*curr_year, *curr as u32, 1)
+                    .unwrap()
                     .weekday()
                     .num_days_from_sunday() as i32;
 
@@ -101,9 +103,9 @@ impl Calendar {
                         };
                         if 0 < day && day < (max_days + 1) {
                             let current_date =
-                                NaiveDate::from_ymd(*curr_year, *curr as u32, day as u32);
+                                NaiveDate::from_ymd_opt(*curr_year, *curr as u32, day as u32).unwrap();
                             let selected = t.is_selected(row, col)
-                                || current_date == Local::today().naive_local();
+                                || current_date == Local::now().naive_local().date();
                             draw_data(day, x, y, w, h, selected);
                         }
                     }
@@ -149,6 +151,11 @@ impl Calendar {
         s.wind.free_position();
         s
     }
+    //Instantiate with label
+    pub fn with_label(mut self, label: &str) -> Self {
+        self.wind.set_label(label);
+        self
+    }
     /// Get the date selected by the calendar dialog
     pub fn get_date(&self) -> Option<chrono::naive::NaiveDate> {
         // get table selection
@@ -158,7 +165,8 @@ impl Calendar {
         } else {
             let year = self.year_choice.value() + 1900;
             let month = self.month_choice.value() as u32 + 1;
-            let first = NaiveDate::from_ymd(year, month, 1)
+            let first = NaiveDate::from_ymd_opt(year, month, 1)
+                .unwrap()
                 .weekday()
                 .num_days_from_sunday() as i32;
 
